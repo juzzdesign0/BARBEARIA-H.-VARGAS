@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento de Corte - Barbearia Vargas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            background-color: #000000;
+            color: rgb(255, 213, 0);
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: rgb(255, 255, 255);
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(250, 247, 247, 0.1);
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .calendar-container {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calendar {
+            width: 300px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: white;
+        }
+
+        .calendar-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .day {
+            padding: 10px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .day:hover {
+            background-color: #e9c600;
+        }
+
+        .selected {
+            background-color: #fbde01;
+            color: rgb(255, 255, 255);
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Barbearia Vargas - Agendamento Online</h1>
+</header>
+
+<!-- Página de Cadastro do Cliente -->
+<div id="cadastro" class="container">
+    <h2>Cadastro do Cliente</h2>
+    <form id="form-cadastro">
+        <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+        <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+        <input type="tel" id="telefone" name="telefone" placeholder="Digite seu telefone" required>
+        <button type="submit">Próximo</button>
+    </form>
+</div>
+
+<!-- Página de Escolha da Data -->
+<div id="calendario" class="container" style="display: none;">
+    <h2>Escolha a Data do Corte</h2>
+    <div id="calendar-header" class="calendar-header"></div>
+    <div id="calendar-days" class="days"></div>
+    <div class="controls">
+        <button onclick="changeMonth(-1)"> Mes Anterior</button>
+        <button onclick="changeMonth(1)">Avaneçar</button>
+    </div>
+</div>
+
+<script>
+    const daysInWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    let currentDate = new Date();
+
+    function renderCalendar() {
+        const calendarHeader = document.getElementById('calendar-header');
+        const calendarDays = document.getElementById('calendar-days');
+
+        const month = currentDate.getMonth();
+        const year = currentDate.getFullYear();
+
+        const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+                            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        calendarHeader.textContent = `Mês de ${monthNames[month]} ${year}`;
+
+        const firstDayOfMonth = new Date(year, month, 1);
+        const lastDayOfMonth = new Date(year, month + 1, 0);
+        const lastDate = lastDayOfMonth.getDate();
+        const firstDay = firstDayOfMonth.getDay();
+
+        let daysHTML = '';
+
+        for (let i = 0; i < firstDay; i++) {
+            daysHTML += `<div class="day"></div>`;
+        }
+
+        for (let day = 1; day <= lastDate; day++) {
+            daysHTML += `<div class="day" onclick="selectDay(${day})">${day}</div>`;
+        }
+
+        calendarDays.innerHTML = daysHTML;
+    }
+
+    function selectDay(day) {
+        const selectedDay = document.querySelector('.selected');
+        if (selectedDay) {
+            selectedDay.classList.remove('selected');
+        }
+        const days = document.querySelectorAll('.day');
+        days[day - 1].classList.add('selected');
+        alert(`Você selecionou o dia: ${day}`);
+        const telefone = document.getElementById('telefone').value;
+        window.location.href = `https://wa.me/+55 55 9123-2964?text=Agendar%20corte%20para%20o%20dia%20${day}%2F${currentDate.getMonth()+1}%2F${currentDate.getFullYear()}%20-%20Telefone%3A%20${telefone}`;
+    }
+
+    function changeMonth(offset) {
+        currentDate.setMonth(currentDate.getMonth() + offset);
+        renderCalendar();
+    }
+
+    function showCalendar() {
+        document.getElementById('cadastro').style.display = 'none';
+        document.getElementById('calendario').style.display = 'block';
+        renderCalendar();
+    }
+
+    const formCadastro = document.getElementById('form-cadastro');
+    formCadastro.addEventListener('submit', function(e) {
+        e.preventDefault();
+        showCalendar();
+    });
+</script>
+
+</body>
+</html>
